@@ -13,7 +13,7 @@ app.get('/', function(req, res){
 
 app.use(require('./routes/usuario'));
 app.use(require('./routes/categoria'));
-
+app.use(require('./routes/login'));
 
 mongoose.connect('mongodb://localhost:27017/cafeteria',{
     useNewUrlParser: true,
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://localhost:27017/cafeteria',{
 
 }, (err, res) => {
     if (err) throw err;
-     console.log('base de datos online')
+     console.log('base de datos ONLINE')
 });
 
 app.listen(process.env.PORT, () => {
