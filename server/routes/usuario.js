@@ -1,11 +1,30 @@
 const express = require('express');
+const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express();
 
 app.get('/usuario', function (req, res){
-    res.json({
-        ok: 200,
-        mensaje: 'usuarios consultados con exito'
+    let desde = req.query.desde || 0;
+    let hasta = req.query.hasta || 5;
+
+    Usuario.find({estado: true})
+    .skip(Number(desde))
+    .limit(Number(hasta))
+    .exec((err, usuarios) => {
+        if (err){
+            return res.status(400).json({
+                ok: false,
+                msg: "ocurrio un error al momento de consultar",
+                err
+            });
+        }
+
+        res.json({
+            ok: true,
+            msg: "lista de usuarios obtenida",
+            conteo: usuarios.length,
+            usuarios
+        });
     });
 });
 
@@ -34,24 +53,43 @@ app.post('/usuario', function(req, res){
     });
 });
 
-app.put('/usuario:id:nombre', function(req, res){
+app.put('/usuario/:id', function(req,res){
     let id = req.params.id;
-    let nombre = red.params.nombre;
-    req.json({
-        ok: 200,
-        mensaje: 'usuario actualizado con exito',
-        id: id,
-        nombre: nombre
+    let body = _.pick(req.body, ['nombre', 'email']);
+
+    Usuario.findByIdAndUpdate(id, body, {new: true, runValidators: true, context: 'query'}, (err,usrDB)=>{
+        if (err){
+            return res.status(400).json({
+                ok: false,
+                msg: 'Ocurrio un error al momento de actualizar',
+                err
+            });
+        }
+        res.json({
+            ok: true,
+            msg: 'usuario actualizado con exito',
+            usuario: usrDB
+        });
     });
 });
 
-app.delete('/usuario:id', function(req, res){
+app.delete('/usuario/:id', function(req,res){
     let id = req.params.id;
 
-    res.json({
-        ok: 200,
-        mensaje: 'usuario eliminado con exito',
-        id: id
+    Usuario.findByIdAndUpdate(id, { estado: false}, {new: true, runValidators: true, context: 'query'}, (err,usrDB) =>{
+        if(err){
+            return res.status(400).json({
+                ok: false,
+                msg: 'Ocurrio un error al momento de eliminar',
+                err
+            });
+        }
+        
+        res.json({
+            ok: true,
+            msg: 'Usuario eliminado con exito',
+            usrDB
+        });
     });
 });
 
