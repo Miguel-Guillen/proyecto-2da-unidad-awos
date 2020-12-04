@@ -16,11 +16,11 @@ app.use(require('./routes/categoria'));
 app.use(require('./routes/productos'));
 app.use(require('./routes/login'));
 
-mongoose.connect('mongodb+srv://admin:ikari2184@cluster0.hl4tv.mongodb.net/cafeteria',{
+mongoose.connect('mongodb+srv://admin:ikari2184@cluster0.hl4tv.mongodb.net/cafeteria?retryWrites=true&w=majority',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 
 }, (err, res) => {
     if (err) throw err;
